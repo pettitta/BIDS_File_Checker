@@ -35,7 +35,8 @@ scan_type_list = {"anat","func","dwi","fmap"}
 
 
 # Copy and paste the tail of each file (i.e., everything after `sub-xxx_ses-wavex_`) into their respective variable 
-d = {'anat': ["T1w.json","T1w.nii.gz"], \ # These are examples, please change to fit study
+# These are examples, please change to fit study
+d = {'anat': ["T1w.json","T1w.nii.gz"], \ 
 	'func': ["task-rest_bold.json","task-rest_bold.nii.gz"], \
 	'dwi': ["dwi.json","dwi.nii.gz","dwi.bval","dwi.bvec"], \
 	'fmap': ["magnitude1.json","magnitude1.nii.gz","magnitude2.json","magnitude2.nii.gz","phasediff.json","phasediff.nii.gz"]}
