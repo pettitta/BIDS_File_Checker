@@ -13,11 +13,11 @@ import pandas as pd
 
 # Set study info (may need to change for your study)
 # These variables are used only in this file for paths. Can omit if wanted.
-Group="adapt_lab"
-Study="ADS"
+Group=""
+Study=""
 
 # Change these to your own paths/times/etc.
-parentdir = os.path.join(os.sep, "projects", Group, "shared", "ADS") # folder that contains bidsdir and codedir
+parentdir = os.path.join(os.sep, "projects", Group, "shared", Study) # folder that contains bidsdir and codedir
 bidsdir = os.path.join(parentdir, "data", "BIDS_data") # where the niftis will be put
 codedir = os.path.join(parentdir, "Scripts", "org", "conversion") # Contains subject_list.txt, config file, and dcm2bids_batch.py
 logdir = os.path.join(codedir, "logs_checker")
@@ -35,7 +35,7 @@ scan_type_list = {"anat","func","dwi","fmap"}
 
 
 # Copy and paste the tail of each file (i.e., everything after `sub-xxx_ses-wavex_`) into their respective variable 
-d = {'anat': ["T1w.json","T1w.nii.gz"], \
+d = {'anat': ["T1w.json","T1w.nii.gz"], \ # These are examples, please change to fit study
 	'func': ["task-rest_bold.json","task-rest_bold.nii.gz"], \
 	'dwi': ["dwi.json","dwi.nii.gz","dwi.bval","dwi.bvec"], \
 	'fmap': ["magnitude1.json","magnitude1.nii.gz","magnitude2.json","magnitude2.nii.gz","phasediff.json","phasediff.nii.gz"]}
@@ -62,7 +62,6 @@ def write_to_errorlog(message,error_type):
 	print(message)
 
 # Without further ado, here's the function!
-
 with open(subject_list) as file: 
 	lines = file.readlines()
 	subjects = []
@@ -80,7 +79,7 @@ with open(subject_list) as file:
 						scan_types.remove(".DS_Store")
 					scan_type_missing = list(set(scan_type_list)-set(scan_types)) # create a list of missing scan types within a wave (e.g., "func", "anat")
 					for scan_type_missing in scan_type_missing:
-						write_to_errorlog(scan_type_missing + " is missing for " + subject + ", ses" + wave + os.linesep, error_type = scan_type_missing) # Write to error log the missing scan types
+						write_to_errorlog("sub-" + subject + " is missing a scan type in ses-" + wave + ": " + scan_type_missing + os.linesep, error_type = scan_type_missing) # Write to error log the missing scan types
 					for scan_type in scan_types:
 						scans = os.listdir(os.path.join(subjectpath,"ses-" + wave, scan_type))
 						if ".DS_Store" in scans:
@@ -88,10 +87,10 @@ with open(subject_list) as file:
 						check_scans = ["sub-" + subject + "_ses-" + wave + "_" + file for file in scan_list[scan_type] if type(file) == str]
 						missing_list = list(set(check_scans)-set(scans)) # Create a list of missing scans within scan types
 						for missing in missing_list:
-								write_to_errorlog(missing + " is missing for sub-" + subject + ", ses-" + wave + os.linesep, error_type = scan_type)
+								write_to_errorlog("sub-" + subject + " is missing a file in ses-" + wave + ": " + missing + os.linesep, error_type = scan_type)
 						extra_list = list(set(scans)-set(check_scans)) # If there are any extra scans or files that shouldn't be there, this will produce an error for it and write it to the log
 						for extra in extra_list:
-							write_to_errorlog(extra + " is an unrecognized file in sub-" + subject + ", ses-" + wave + os.linesep, error_type = scan_type)
+							write_to_errorlog("sub-" + subject + " has an unrecognized file in ses-" + wave + ": " + extra + os.linesep, error_type = scan_type)
 						del [check_scans,missing_list,extra_list] # Cleaning up the workspace
 					del [scan_types,scan_type_missing] # A little more cleaning
 				else:
